@@ -1,42 +1,26 @@
 /**
- * Tap Event Broadcaster
+ * Tap Event Broadcaster - Node.js Compatible Version
  * 
- * In-memory event emitter for broadcasting NFC card tap events
- * from the Pi sidecar to connected POS/topup clients via WebSocket.
- * 
- * Features:
- * - Server-side deduplication to prevent duplicate taps
- * - Automatic cleanup of old tap records
- * - Thread-safe listener management
+ * This is a CommonJS version that can be imported by the custom server.
+ * Maintains the same functionality as the TypeScript version.
  */
 
-export interface TapEvent {
-  card_uid: string;
-  lane?: string;
-  reader_ts?: string;
-  timestamp: string;
-}
-
-type TapListener = (event: TapEvent) => void;
-
 class TapEventBroadcaster {
-  private listeners: Set<TapListener> = new Set();
-  private recentTaps = new Map<string, number>();
-  private readonly DEBOUNCE_MS = 1000;
-  private readonly MAX_RECENT_TAPS = 100;
-  private cleanupInterval: NodeJS.Timeout | null = null;
-
   constructor() {
-    // Start cleanup interval to prevent memory leaks
+    this.listeners = new Set();
+    this.recentTaps = new Map();
+    this.DEBOUNCE_MS = 1000;
+    this.MAX_RECENT_TAPS = 100;
+    this.cleanupInterval = null;
+    
+    // Start cleanup interval
     this.startCleanupInterval();
   }
 
   /**
    * Subscribe to tap events
-   * @param listener Callback function to receive tap events
-   * @returns Unsubscribe function
    */
-  subscribe(listener: TapListener): () => void {
+  subscribe(listener) {
     this.listeners.add(listener);
     return () => {
       this.listeners.delete(listener);
@@ -45,10 +29,8 @@ class TapEventBroadcaster {
 
   /**
    * Broadcast a tap event to all listeners with deduplication
-   * @param event Tap event to broadcast
-   * @returns true if event was broadcast, false if it was a duplicate
    */
-  broadcast(event: TapEvent): boolean {
+  broadcast(event) {
     // Check for duplicate tap
     const now = Date.now();
     const lastTap = this.recentTaps.get(event.card_uid);
@@ -73,7 +55,7 @@ class TapEventBroadcaster {
       try {
         listener(event);
       } catch (error) {
-        console.error("[TapBroadcaster] Listener error:", error);
+        console.error('[TapBroadcaster] Listener error:', error);
       }
     });
 
@@ -83,21 +65,21 @@ class TapEventBroadcaster {
   /**
    * Get the number of active listeners
    */
-  getListenerCount(): number {
+  getListenerCount() {
     return this.listeners.size;
   }
 
   /**
    * Get the number of recent taps being tracked
    */
-  getRecentTapCount(): number {
+  getRecentTapCount() {
     return this.recentTaps.size;
   }
 
   /**
    * Start periodic cleanup of old tap records
    */
-  private startCleanupInterval(): void {
+  startCleanupInterval() {
     // Run cleanup every 10 seconds
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldTaps();
@@ -112,7 +94,7 @@ class TapEventBroadcaster {
   /**
    * Clean up old tap records that are beyond the debounce window
    */
-  private cleanupOldTaps(): void {
+  cleanupOldTaps() {
     const now = Date.now();
     const cutoff = now - (this.DEBOUNCE_MS * 2); // Keep records for 2x debounce time
     let cleaned = 0;
@@ -132,15 +114,15 @@ class TapEventBroadcaster {
   /**
    * Clear all tap history (useful for testing)
    */
-  clearHistory(): void {
+  clearHistory() {
     this.recentTaps.clear();
-    console.log("[TapBroadcaster] Tap history cleared");
+    console.log('[TapBroadcaster] Tap history cleared');
   }
 
   /**
    * Cleanup resources when shutting down
    */
-  destroy(): void {
+  destroy() {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
@@ -153,5 +135,5 @@ class TapEventBroadcaster {
 // Global singleton instance
 const tapBroadcaster = new TapEventBroadcaster();
 
-export default tapBroadcaster;
+module.exports = { default: tapBroadcaster, TapEventBroadcaster };
 
