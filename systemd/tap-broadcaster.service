@@ -1,22 +1,23 @@
+# NOTE: Example service file - customize for your deployment before use
 [Unit]
 Description=NFC Tap Broadcaster for SCPS POS (WebSocket)
 After=network.target
 
 [Service]
 Type=simple
-User=qiss
-WorkingDirectory=/home/qiss/stuco
+User=stuco
+WorkingDirectory=/opt/stuco
 # Load environment variables from file (including NFC_TAP_SECRET)
-EnvironmentFile=/home/qiss/stuco/.env.broadcaster
+EnvironmentFile=/opt/stuco/.env.broadcaster
 Environment="NEXTJS_URL=http://localhost:3000"
 Environment="POS_LANE_ID=reader-1"
 Environment="PN532_DEVICE=tty:USB0:pn532"
 
 # Pre-start: Reset USB device to ensure clean state
-ExecStartPre=/home/qiss/stuco/scripts/reset-usb-nfc.sh
+ExecStartPre=/opt/stuco/scripts/reset-usb-nfc.sh
 
 # Main process with unbuffered output
-ExecStart=/home/qiss/stuco/.venv/bin/python -u /home/qiss/stuco/tap-broadcaster.py
+ExecStart=/opt/stuco/.venv/bin/python -u /opt/stuco/tap-broadcaster.py
 
 # Post-stop: Allow cleanup time
 ExecStopPost=/bin/sleep 1

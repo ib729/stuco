@@ -13,7 +13,7 @@ Common issues and solutions for the Student Council Payment System.
 **Solution**: **Use production mode when accessing through Cloudflare Tunnels:**
 
 ```bash
-cd /home/qiss/stuco/web-next
+cd /path/to/stuco/web-next
 pnpm build
 pnpm start  # Production mode - no HMR, no refreshes
 ```

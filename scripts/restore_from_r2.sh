@@ -5,6 +5,10 @@
 
 set -e
 
+# Get script directory and project root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+
 # Check if backup filename is provided
 if [ -z "$1" ]; then
     echo "Usage: $0 <backup_filename.tar.gz>"
@@ -92,7 +96,7 @@ echo "Step 3: Restoring database"
 echo "------------------------------------------------------------"
 
 # Change to project root
-cd /home/qiss/stuco
+cd "$PROJECT_ROOT"
 
 # Extract
 tar -xzf "$LOCAL_PATH"

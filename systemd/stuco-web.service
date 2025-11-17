@@ -1,15 +1,17 @@
+# NOTE: This is an example service file - customize before deployment
+# Update User and paths to match your deployment environment
 [Unit]
 Description=SCPS Web Server (Next.js with WebSocket)
 After=network.target
 
 [Service]
 Type=simple
-User=qiss
-WorkingDirectory=/home/qiss/stuco/web-next
+User=stuco
+WorkingDirectory=/opt/stuco/web-next
 Environment="NODE_ENV=production"
 Environment="PORT=3000"
 Environment="HOSTNAME=0.0.0.0"
-ExecStart=/usr/bin/node /home/qiss/stuco/web-next/server.js
+ExecStart=/usr/bin/node /opt/stuco/web-next/server.js
 StandardOutput=journal
 StandardError=journal
 Restart=on-failure

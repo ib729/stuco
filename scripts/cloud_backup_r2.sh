@@ -6,6 +6,11 @@
 
 set -e
 
+# Change to project root (repository root)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+cd "$PROJECT_ROOT"
+
 # Configuration
 DB_FILE="stuco.db"
 DB_WAL="stuco.db-wal" 
@@ -144,7 +149,7 @@ echo "Local:  $BACKUP_FILE"
 echo "Remote: ${RCLONE_REMOTE}:${R2_PATH}/${BACKUP_NAME}.tar.gz"
 echo ""
 echo "To restore from this backup:"
-echo "  cd /home/qiss/stuco"
+echo "  cd /path/to/stuco"
 echo "  tar -xzf $BACKUP_FILE"
 echo ""
 echo "To list all R2 backups:"

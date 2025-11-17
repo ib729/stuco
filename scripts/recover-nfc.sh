@@ -14,7 +14,9 @@ sudo pkill -f "tap-broadcaster.py" 2>/dev/null || true
 sleep 1
 
 echo "3. Resetting USB device..."
-/home/qiss/stuco/scripts/reset-usb-nfc.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+"$PROJECT_ROOT"/scripts/reset-usb-nfc.sh
 
 echo "4. Waiting 3 seconds for device to stabilize..."
 sleep 3
